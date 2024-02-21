@@ -1,0 +1,27 @@
+[package]
+name = "short-uuid"
+version = "0.1.0"
+edition = "2021"
+authors = ["Radim Höfer"]
+categories = ["data-structures"]
+description = "A library to generate and parse short UUIDs, a port from Javscript's [short-uuid](https://github.com/oculus42/short-uuid)."
+documentation = "https://docs.rs/short-uuid"
+
+keywords = ["uuid", "short-uuid"]
+
+license = "MIT"
+homepage = "https://github.com/radim10/short-uuid"
+readme = "README.md"
+repository = "https://github.com/uuid-rs/uuid"
+
+
+[features]
+default = ["std"]
+std = []
+
+[workspace]
+members = ["examples"]
+
+[dependencies.uuid]
+version = "1.7.0"
+features = ["v4"]
