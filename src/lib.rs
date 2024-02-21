@@ -27,6 +27,18 @@ impl ShortUuid {
         ShortUuid(result)
     }
 
+    /// Convert uuid to short
+    pub fn from_uuid(uuid_string: &str) -> ShortUuid {
+        let cleaned = uuid_string.to_lowercase().replace("-", "");
+
+        let converter = converter::BaseConverter::new(FLICKR_BASE);
+
+        // convert to selected base
+        let result = converter.convert(&cleaned);
+
+        ShortUuid(result)
+    }
+
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }
