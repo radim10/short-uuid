@@ -51,9 +51,9 @@ impl BaseConverter {
     }
 
     /// Convert uuid to custom bytes
-    pub fn convert(&self, uuid_string: &str) -> Vec<u8> {
+    pub fn convert(&self, uuid_string: &str) -> Result<Vec<u8>, DecodeHexError> {
         // decode hex uuid into bytes
-        let decoded_bytes = decode_hex(&uuid_string).unwrap();
+        let decoded_bytes = decode_hex(&uuid_string)?;
 
         let alphabet_length = get_short_id_length(self.alphabet.len() as f64);
 
@@ -65,7 +65,7 @@ impl BaseConverter {
             self.alphabet.chars().next().unwrap(),
         );
 
-        result_bytes
+        Ok(result_bytes)
     }
 
     /// Convert custom bytes to hex
@@ -206,7 +206,10 @@ fn custom_bytes_to_bytes(encoded_bytes: &[u8], alphabet: &[u8]) -> Result<Vec<u8
         let index = alphabet.iter().position(|&c| c == byte);
 
         match index {
-            Some(i) => result = result * base + i as u128,
+            Some(i) => {
+                // Check for overflow before multiplying
+                result = result.checked_mul(base).ok_or("Multiplication overflow")? + i as u128;
+            }
             None => return Err("Invalid character in custom base"),
         }
     }
