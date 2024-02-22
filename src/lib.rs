@@ -65,7 +65,7 @@ impl ShortUuid {
     }
 
     /// Convert uuid to short format using flickrBase58
-    pub fn from_uuid_custom(
+    pub fn from_uuid_str_custom(
         uuid_string: &str,
         custom_base: &'static str,
     ) -> Result<ShortUuid, ErrorKind> {
