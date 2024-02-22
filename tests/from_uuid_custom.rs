@@ -7,7 +7,7 @@ mod tests {
         let custom_base = "sb";
         let uuid_string = "0408510d-ce4f-4761-ab67-2dfe2931c893";
 
-        let generated = ShortUuid::from_uuid_custom(&uuid_string, custom_base);
+        let generated = ShortUuid::from_uuid_str_custom(&uuid_string, custom_base);
 
         match generated {
             Ok(generated) => {
