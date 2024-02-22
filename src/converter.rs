@@ -1,37 +1,40 @@
 pub struct BaseConverter {
-    dst_alphabet: &'static str,
+    /// Alphabet used for encoding or decoding
+    alphabet: &'static str,
+    // dst_alphabet: &'static str,
+    // src_alphabet: &'static str,
 }
 
 impl BaseConverter {
     // pub const BIN: &'static str = "01";
     // pub const OCT: &'static str = "01234567";
     // pub const DEC: &'static str = "0123456789";
-    // pub const HEX: &'static str = "0123456789abcdef";
+    pub const HEX: &'static str = "0123456789abcdef";
     //
-    pub fn new(dst_alphabet: &'static str) -> Self {
-        if dst_alphabet.is_empty() {
+    pub fn new(alphabet: &'static str) -> Self {
+        if alphabet.is_empty() {
             panic!("Bad alphabet");
         }
 
-        Self { dst_alphabet }
+        Self { alphabet }
     }
 
     pub fn is_valid(&self, number: &str) -> bool {
-        number.chars().all(|c| self.dst_alphabet.contains(c))
+        number.chars().all(|c| self.alphabet.contains(c))
     }
 
     pub fn convert(&self, uuid_string: &str) -> Vec<u8> {
         // decode hex uuid into bytes
         let decoded_bytes = decode_hex(&uuid_string).unwrap();
 
-        let alphabet_length = get_short_id_length(self.dst_alphabet.len() as f64);
+        let alphabet_length = get_short_id_length(self.alphabet.len() as f64);
 
         // encode bytes into custom alphabet bytes
         let result_bytes = bytes_to_custom_bytes(
             &decoded_bytes,
-            self.dst_alphabet.as_bytes(),
+            self.alphabet.as_bytes(),
             alphabet_length,
-            self.dst_alphabet.chars().next().unwrap(),
+            self.alphabet.chars().next().unwrap(),
         );
 
         result_bytes
@@ -49,6 +52,19 @@ impl BaseConverter {
         // result_string
 
         // return String::from_utf8(result_bytes).unwrap();
+    }
+
+    pub fn convert_to_hex(&self, target_bytes: &[u8]) -> Result<String, &'static str> {
+        // Convert custom-encoded bytes to regular bytes using custom_bytes_to_hex
+        let regular_bytes = custom_bytes_to_bytes(target_bytes, self.alphabet.as_bytes())?;
+
+        // Convert regular bytes to hex string using encode_hex
+        let hex_string = encode_hex(&regular_bytes);
+
+        // Pad the hex string to ensure it has the correct length
+        let padded = pad_start(&hex_string, 32, '0');
+
+        Ok(padded)
     }
 }
 
@@ -144,6 +160,37 @@ fn bytes_to_custom_string(bytes: &[u8], alphabet: &[u8]) -> String {
     }
 
     result
+}
+
+fn custom_bytes_to_bytes(encoded_bytes: &[u8], alphabet: &[u8]) -> Result<Vec<u8>, &'static str> {
+    let base = alphabet.len() as u128;
+
+    let mut result = 0u128;
+
+    for &byte in encoded_bytes {
+        let index = alphabet.iter().position(|&c| c == byte);
+
+        match index {
+            Some(i) => result = result * base + i as u128,
+            None => return Err("Invalid character in custom base"),
+        }
+    }
+
+    let mut decoded_bytes = Vec::new();
+
+    // Reconstruct the bytes from the numerical value
+    while result > 0 {
+        decoded_bytes.push((result % 256) as u8);
+        result /= 256;
+    }
+
+    decoded_bytes.reverse(); // Reverse the result since we're building it from the least significant digit
+    Ok(decoded_bytes)
+}
+
+fn encode_hex(bytes: &[u8]) -> String {
+    let hex_chars: Vec<String> = bytes.iter().map(|b| format!("{:02x}", b)).collect();
+    hex_chars.join("")
 }
 
 fn pad_start(input: &str, target_length: usize, padding: char) -> String {
