@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use short_uuid::ShortUuid;
+    use short_uuid::{ShortUuid, ShortUuidCustom};
 
     #[test]
     fn generate_short_uuid() {
