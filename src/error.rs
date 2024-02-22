@@ -1,26 +1,43 @@
 use core::fmt;
-use std::ops::Deref;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Error(pub ErrorKind);
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub enum ErrorKind {
+    /// Uuid input format error
     UuidError(uuid::Error),
 
-    /// Empty alphabet
-    EmptyAlphabet,
+    /// Custom alphabet error
+    CustomAlphabet(CustomAlphabetError),
+}
 
-    /// Invalid alphabet
-    InvalidAlphabet,
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+pub enum CustomAlphabetError {
+    Length,
+    EmptyAlphabet,
+    DuplicateAlphabetCharacter,
 }
 
 impl fmt::Display for ErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ErrorKind::EmptyAlphabet => write!(f, "Alphabet is empty"),
-            ErrorKind::InvalidAlphabet => write!(f, "Alphabet is invalid"),
             ErrorKind::UuidError(e) => e.fmt(f),
+            ErrorKind::CustomAlphabet(e) => e.fmt(f),
+        }
+    }
+}
+
+impl fmt::Display for CustomAlphabetError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            CustomAlphabetError::EmptyAlphabet => write!(f, "Alphabet cannot be empty"),
+            CustomAlphabetError::DuplicateAlphabetCharacter => {
+                write!(f, "Alphabet contains duplicate characters")
+            }
+            CustomAlphabetError::Length => {
+                write!(f, "Alphabet must contain at least 2 characters")
+            }
         }
     }
 }
