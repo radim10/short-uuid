@@ -1,5 +1,5 @@
 use converter::BaseConverter;
-use error::{CustomAlphabetError, ErrorKind};
+use error::{CustomAlphabetError, ErrorKind, InvalidShortUuid, ParseStrCustomErrorKind};
 
 pub mod converter;
 mod error;
@@ -21,8 +21,9 @@ pub type Bytes = Vec<u8>;
 #[derive(Debug)]
 pub struct ShortUuid(Bytes);
 
+// TODO: separate ShortUuid and ShortUuidCustom
 impl ShortUuid {
-    /// Generate a short UUID v4 in flickrBase58
+    /// Generate a short UUID v5 in flickrBase58
     pub fn generate() -> ShortUuid {
         let default_converter = BaseConverter::default();
         generate_short(default_converter)
@@ -50,7 +51,7 @@ impl ShortUuid {
         let converter = BaseConverter::default();
 
         // convert to selected base
-        let result = converter.convert(&cleaned);
+        let result = converter.convert(&cleaned).unwrap();
 
         Ok(ShortUuid(result))
     }
@@ -64,7 +65,7 @@ impl ShortUuid {
         let converter = BaseConverter::default();
 
         // convert to selected base
-        let result = converter.convert(&cleaned);
+        let result = converter.convert(&cleaned).unwrap();
 
         ShortUuid(result)
     }
@@ -84,7 +85,7 @@ impl ShortUuid {
         let cleaned = parsed.to_string().to_lowercase().replace("-", "");
 
         // convert to selected base
-        let result = converter.convert(&cleaned);
+        let result = converter.convert(&cleaned).unwrap();
 
         Ok(ShortUuid(result))
     }
@@ -118,6 +119,44 @@ impl ShortUuid {
         Ok(uuid_value)
     }
 
+    /// Validate that short uuid str is valid uuid
+    pub fn parse_str(short_uuid_str: &str) -> Result<Self, InvalidShortUuid> {
+        if short_uuid_str.len() != 22 {
+            return Err(InvalidShortUuid);
+        };
+
+        let byte_vector: Vec<u8> = short_uuid_str.as_bytes().to_vec();
+
+        let to_hex_converter = BaseConverter::default();
+
+        // Convert to hex string
+        let result = to_hex_converter.convert_to_hex(&byte_vector).unwrap();
+
+        // validate
+        uuid::Uuid::try_parse(&result).map_err(|_| InvalidShortUuid)?;
+
+        Ok(Self(byte_vector))
+    }
+
+    /// Validate that short uuid str is valid uuid using custom alphabet
+    pub fn parse_str_custom(
+        short_uuid_str: &str,
+        custom_alphabet: &'static str,
+    ) -> Result<Self, ParseStrCustomErrorKind> {
+        let byte_vector: Vec<u8> = short_uuid_str.as_bytes().to_vec();
+        let converter = BaseConverter::new_custom(custom_alphabet)
+            .map_err(|e| ParseStrCustomErrorKind::CustomAlphabet(e))?;
+
+        //
+        let result_string = converter.convert_to_hex(&byte_vector).unwrap();
+
+        // validate
+        uuid::Uuid::try_parse(&result_string)
+            .map_err(|_| ParseStrCustomErrorKind::InvalidShortUuid)?;
+
+        Ok(Self(byte_vector))
+    }
+
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }
@@ -131,7 +170,7 @@ fn generate_short(base_converter: BaseConverter) -> ShortUuid {
     let cleaned = uuid_string.to_lowercase().replace("-", "");
 
     // convert to selected base
-    let result = base_converter.convert(&cleaned);
+    let result = base_converter.convert(&cleaned).unwrap();
 
     ShortUuid(result)
 }
