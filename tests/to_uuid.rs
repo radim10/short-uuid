@@ -7,7 +7,7 @@ mod tests {
         let uuid = uuid::Uuid::new_v4();
         let uuid_string = uuid.to_string();
 
-        let generated = ShortUuid::from_uuid(&uuid_string).unwrap();
+        let generated = ShortUuid::from_uuid_str(&uuid_string).unwrap();
         let _ = generated.to_string();
 
         dbg!("{:#?}", &generated);

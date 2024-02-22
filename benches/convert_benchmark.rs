@@ -6,7 +6,7 @@ pub fn convert_from_uuid(c: &mut Criterion) {
         b.iter(|| {
             let uuid = "0408510d-ce4f-4761-ab67-2dfe2931c898";
 
-            let _ = black_box(black_box(ShortUuid::from_uuid(&uuid)));
+            let _ = black_box(black_box(ShortUuid::from_uuid_str(&uuid)));
         })
     });
 }

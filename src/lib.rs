@@ -36,7 +36,7 @@ impl ShortUuid {
     }
 
     /// Convert uuid to short format using flickrBase58
-    pub fn from_uuid(uuid_string: &str) -> Result<ShortUuid, UuidError> {
+    pub fn from_uuid_str(uuid_string: &str) -> Result<ShortUuid, UuidError> {
         // validate
         uuid::Uuid::parse_str(uuid_string)?;
 
