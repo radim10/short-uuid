@@ -50,7 +50,7 @@ impl BaseConverter {
         Ok(())
     }
 
-    // Convert uuid to custom bytes
+    /// Convert uuid to custom bytes
     pub fn convert(&self, uuid_string: &str) -> Vec<u8> {
         // decode hex uuid into bytes
         let decoded_bytes = decode_hex(&uuid_string).unwrap();
@@ -68,6 +68,7 @@ impl BaseConverter {
         result_bytes
     }
 
+    /// Convert custom bytes to hex
     pub fn convert_to_hex(&self, target_bytes: &[u8]) -> Result<String, &'static str> {
         // Convert custom-encoded bytes to regular bytes using custom_bytes_to_hex
         let regular_bytes = custom_bytes_to_bytes(target_bytes, self.alphabet.as_bytes())?;
@@ -164,26 +165,6 @@ fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
     Ok(result)
 }
 
-// fn bytes_to_custom_bytes(bytes: &[u8], alphabet: &[u8]) -> Vec<u8> {
-//     let base = alphabet.len() as u128;
-//
-//     let mut result = Vec::new();
-//     let mut value = 0u128;
-//
-//     for &byte in bytes {
-//         value = value * 256 + byte as u128;
-//     }
-//
-//     while value > 0 {
-//         let index = (value % base) as usize;
-//         result.push(alphabet[index]);
-//         value /= base;
-//     }
-//
-//     result.reverse(); // Reverse the result since we're building it from the least significant digit
-//
-//     result
-// }
 fn bytes_to_custom_bytes(
     bytes: &[u8],
     alphabet: &[u8],
@@ -211,25 +192,6 @@ fn bytes_to_custom_bytes(
     while result.len() < target_length {
         // result.push(padding_char as u8);
         result.insert(0, padding_char as u8);
-    }
-
-    result
-}
-
-fn bytes_to_custom_string(bytes: &[u8], alphabet: &[u8]) -> String {
-    let base = alphabet.len() as u128;
-
-    let mut result = String::new();
-    let mut value = 0u128;
-
-    for &byte in bytes {
-        value = value * 256 + byte as u128;
-    }
-
-    while value > 0 {
-        let index = (value % base) as usize;
-        result.insert(0, alphabet[index] as char);
-        value /= base;
     }
 
     result
