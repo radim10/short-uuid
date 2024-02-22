@@ -5,6 +5,8 @@ pub mod converter;
 mod error;
 mod fmt;
 
+mod macros;
+
 pub const FLICKR_BASE: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
 pub const COOKIE_BASE_90: &str =
@@ -21,18 +23,7 @@ pub struct ShortUuid(Bytes);
 impl ShortUuid {
     /// Generate a short UUID v4 in flickrBase58
     pub fn generate() -> ShortUuid {
-        // Generate UUID v4
-        let uuid_string = uuid::Uuid::new_v4().to_string();
-
-        // clean string
-        let cleaned = uuid_string.to_lowercase().replace("-", "");
-
-        let converter = BaseConverter::new(FLICKR_BASE).unwrap();
-
-        // convert to selected base
-        let result = converter.convert(&cleaned);
-
-        ShortUuid(result)
+        generate_short()
     }
 
     /// Convert uuid to short format using flickrBase58
@@ -102,10 +93,14 @@ impl ShortUuid {
     /// Convert short to uuid using custom base
     pub fn to_uuid_custom(self, custom_base: &'static str) -> Result<uuid::Uuid, ErrorKind> {
         let to_hex_converter =
-            BaseConverter::new(custom_base).map_err(|_| ErrorKind::EmptyAlphabet)?;
+            BaseConverter::new(custom_base).map_err(|_| ErrorKind::EmptyAlphabet);
+
+        if let Err(e) = to_hex_converter {
+            return Err(e);
+        }
 
         // Convert to hex string
-        let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
+        let result = to_hex_converter.unwrap().convert_to_hex(&self.0).unwrap();
 
         // Format hex string as uuid
         let uuid_value = format_uuid(result);
@@ -116,6 +111,21 @@ impl ShortUuid {
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }
+}
+
+fn generate_short() -> ShortUuid {
+    // Generate UUID v4
+    let uuid_string = uuid::Uuid::new_v4().to_string();
+
+    // clean string
+    let cleaned = uuid_string.to_lowercase().replace("-", "");
+
+    let converter = BaseConverter::new(FLICKR_BASE).unwrap();
+
+    // convert to selected base
+    let result = converter.convert(&cleaned);
+
+    ShortUuid(result)
 }
 
 fn format_uuid(value: String) -> uuid::Uuid {
