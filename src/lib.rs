@@ -6,6 +6,7 @@ mod error;
 mod fmt;
 
 mod macros;
+use uuid;
 
 pub const FLICKR_BASE: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
@@ -29,9 +30,9 @@ impl ShortUuid {
     /// Convert uuid to short format using flickrBase58
     pub fn from_uuid_str(uuid_string: &str) -> Result<ShortUuid, UuidError> {
         // validate
-        uuid::Uuid::parse_str(uuid_string)?;
+        let parsed = uuid::Uuid::parse_str(uuid_string)?;
 
-        let cleaned = uuid_string.to_lowercase().replace("-", "");
+        let cleaned = parsed.to_string().to_lowercase().replace("-", "");
 
         let converter = BaseConverter::default();
 
@@ -61,13 +62,13 @@ impl ShortUuid {
         custom_alphabet: &'static str,
     ) -> Result<ShortUuid, ErrorKind> {
         // validate
-        uuid::Uuid::parse_str(uuid_string).map_err(|e| ErrorKind::UuidError(e))?;
+        let parsed = uuid::Uuid::parse_str(uuid_string).map_err(|e| ErrorKind::UuidError(e))?;
 
         // Validate custom alphabet
         let converter =
             BaseConverter::new_custom(custom_alphabet).map_err(|e| ErrorKind::CustomAlphabet(e))?;
 
-        let cleaned = uuid_string.to_lowercase().replace("-", "");
+        let cleaned = parsed.to_string().to_lowercase().replace("-", "");
 
         // convert to selected base
         let result = converter.convert(&cleaned);
