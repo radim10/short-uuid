@@ -9,7 +9,7 @@ mod tests {
     #[test]
     fn test_flickr_base_conversion() {
         let uuid_string = "0408510d-ce4f-4761-ab67-2dfe2931c898";
-        let converter = BaseConverter::new(FLICKR_BASE_58).unwrap();
+        let converter = BaseConverter::default();
 
         let result = converter.convert(&uuid_string.to_lowercase().replace('-', ""));
 
