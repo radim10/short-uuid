@@ -1,4 +1,5 @@
-use core::fmt;
+use std::fmt;
+use uuid;
 
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Error(pub ErrorKind);
