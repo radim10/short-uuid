@@ -64,10 +64,10 @@ impl ShortUuid {
         ShortUuid(result)
     }
 
-    /// Convert uuid to short format using flickrBase58
+    /// Convert uuid string to short format using custom alphabet
     pub fn from_uuid_str_custom(
         uuid_string: &str,
-        custom_base: &'static str,
+        custom_alphabet: &'static str,
     ) -> Result<ShortUuid, ErrorKind> {
         // validate
         let is_valid_uuid = uuid::Uuid::parse_str(uuid_string);
@@ -76,7 +76,8 @@ impl ShortUuid {
             return Err(ErrorKind::UuidError(e));
         }
 
-        let converter = BaseConverter::new(custom_base).map_err(|_| ErrorKind::EmptyAlphabet)?;
+        let converter =
+            BaseConverter::new(custom_alphabet).map_err(|_| ErrorKind::EmptyAlphabet)?;
 
         let cleaned = uuid_string.to_lowercase().replace("-", "");
 
