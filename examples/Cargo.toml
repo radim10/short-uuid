@@ -1,0 +1,11 @@
+[package]
+name = "short-uuid-examples"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[[example]]
+name = "generate"
+path = "src/generate.rs"
+
+

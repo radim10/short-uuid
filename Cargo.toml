@@ -22,6 +22,21 @@ std = []
 [workspace]
 members = ["examples"]
 
+[[bench]]
+name = "convert_benchmark"
+path = "benches/convert_benchmark.rs"
+harness = false
+
+
+[[bench]]
+name = "generate_benchmark"
+path = "benches/generate_benchmark.rs"
+harness = false
+
 [dependencies.uuid]
 version = "1.7.0"
 features = ["v4"]
+
+[dev-dependencies]
+criterion = "0.5.1"
+
