@@ -1,5 +1,5 @@
 use converter::BaseConverter;
-use error::ErrorKind;
+use error::{CustomAlphabetError, ErrorKind};
 
 pub mod converter;
 mod error;
@@ -33,7 +33,7 @@ impl ShortUuid {
 
         let cleaned = uuid_string.to_lowercase().replace("-", "");
 
-        let converter = BaseConverter::new(FLICKR_BASE).unwrap();
+        let converter = BaseConverter::default();
 
         // convert to selected base
         let result = converter.convert(&cleaned);
@@ -47,7 +47,7 @@ impl ShortUuid {
 
         let cleaned = uuid_string.to_lowercase().replace("-", "");
 
-        let converter = BaseConverter::new(FLICKR_BASE).unwrap();
+        let converter = BaseConverter::default();
 
         // convert to selected base
         let result = converter.convert(&cleaned);
@@ -61,14 +61,11 @@ impl ShortUuid {
         custom_alphabet: &'static str,
     ) -> Result<ShortUuid, ErrorKind> {
         // validate
-        let is_valid_uuid = uuid::Uuid::parse_str(uuid_string);
+        uuid::Uuid::parse_str(uuid_string).map_err(|e| ErrorKind::UuidError(e))?;
 
-        if let Err(e) = is_valid_uuid {
-            return Err(ErrorKind::UuidError(e));
-        }
-
+        // Validate custom alphabet
         let converter =
-            BaseConverter::new(custom_alphabet).map_err(|_| ErrorKind::EmptyAlphabet)?;
+            BaseConverter::new_custom(custom_alphabet).map_err(|e| ErrorKind::CustomAlphabet(e))?;
 
         let cleaned = uuid_string.to_lowercase().replace("-", "");
 
@@ -81,7 +78,7 @@ impl ShortUuid {
     /// Convert short to uuid
     pub fn to_uuid(self) -> uuid::Uuid {
         // Convert to hex
-        let to_hex_converter = BaseConverter::new(FLICKR_BASE).unwrap();
+        let to_hex_converter = BaseConverter::default();
 
         // Convert to hex string
         let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
@@ -91,16 +88,15 @@ impl ShortUuid {
     }
 
     /// Convert short to uuid using custom base
-    pub fn to_uuid_custom(self, custom_base: &'static str) -> Result<uuid::Uuid, ErrorKind> {
-        let to_hex_converter =
-            BaseConverter::new(custom_base).map_err(|_| ErrorKind::EmptyAlphabet);
-
-        if let Err(e) = to_hex_converter {
-            return Err(e);
-        }
+    pub fn to_uuid_custom(
+        self,
+        custom_alphabet: &'static str,
+    ) -> Result<uuid::Uuid, CustomAlphabetError> {
+        let to_hex_converter = BaseConverter::new_custom(custom_alphabet)?;
 
         // Convert to hex string
-        let result = to_hex_converter.unwrap().convert_to_hex(&self.0).unwrap();
+        // Should not fail
+        let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
 
         // Format hex string as uuid
         let uuid_value = format_uuid(result);
@@ -120,7 +116,7 @@ fn generate_short() -> ShortUuid {
     // clean string
     let cleaned = uuid_string.to_lowercase().replace("-", "");
 
-    let converter = BaseConverter::new(FLICKR_BASE).unwrap();
+    let converter = BaseConverter::default();
 
     // convert to selected base
     let result = converter.convert(&cleaned);
