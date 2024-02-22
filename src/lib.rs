@@ -3,9 +3,9 @@ use converter::BaseConverter;
 pub mod converter;
 mod fmt;
 
-const FLICKR_BASE: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+pub const FLICKR_BASE: &str = "123456789abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
 
-const COOKIE_BASE_90: &str =
+pub const COOKIE_BASE_90: &str =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&'()*+-./:<=>?@[]^_`{|}~";
 
 // pub type Bytes = [u8; 16];
@@ -31,11 +31,23 @@ impl ShortUuid {
         ShortUuid(result)
     }
 
-    /// Convert uuid to short
+    /// Convert uuid to short format using flickrBase58
     pub fn from_uuid(uuid_string: &str) -> ShortUuid {
         let cleaned = uuid_string.to_lowercase().replace("-", "");
 
         let converter = BaseConverter::new(FLICKR_BASE);
+
+        // convert to selected base
+        let result = converter.convert(&cleaned);
+
+        ShortUuid(result)
+    }
+
+    /// Convert uuid to short format using flickrBase58
+    pub fn from_uuid_custom(uuid_string: &str, custom_base: &'static str) -> ShortUuid {
+        let cleaned = uuid_string.to_lowercase().replace("-", "");
+
+        let converter = BaseConverter::new(custom_base);
 
         // convert to selected base
         let result = converter.convert(&cleaned);
@@ -48,25 +60,41 @@ impl ShortUuid {
         // Convert to hex
         let to_hex_converter = BaseConverter::new(FLICKR_BASE);
 
+        // Convert to hex string
         let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
-        dbg!(&result);
 
-        let formatted_uuid = format!(
-            "{}-{}-{}-{}-{}",
-            &result[0..8],
-            &result[8..12],
-            &result[12..16],
-            &result[16..20],
-            &result[20..32]
-        );
+        // Format hex string as uuid
+        format_uuid(result)
+    }
 
-        // Should not fail
-        let uuid = uuid::Uuid::parse_str(&formatted_uuid).unwrap();
+    /// Convert short to uuid using custom base
+    pub fn to_uuid_custom(self, custom_base: &'static str) -> uuid::Uuid {
+        let to_hex_converter = BaseConverter::new(custom_base);
 
-        return uuid;
+        // Convert to hex string
+        let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
+
+        // Format hex string as uuid
+        format_uuid(result)
     }
 
     pub fn as_slice(&self) -> &[u8] {
         &self.0
     }
+}
+
+fn format_uuid(value: String) -> uuid::Uuid {
+    let formatted_uuid = format!(
+        "{}-{}-{}-{}-{}",
+        &value[0..8],
+        &value[8..12],
+        &value[12..16],
+        &value[16..20],
+        &value[20..32]
+    );
+
+    // Should not fail
+    let uuid = uuid::Uuid::parse_str(&formatted_uuid).unwrap();
+
+    return uuid;
 }
