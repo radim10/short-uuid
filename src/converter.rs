@@ -1,32 +1,56 @@
 use core::fmt;
 
-use crate::error::{Error, ErrorKind};
+use crate::{error::CustomAlphabetError, FLICKR_BASE};
 
 pub struct BaseConverter {
     /// Alphabet used for encoding or decoding
     alphabet: &'static str,
-    // dst_alphabet: &'static str,
-    // src_alphabet: &'static str,
+}
+
+/// Create a new BaseConverter with default flickrBase58 alphabet
+impl Default for BaseConverter {
+    fn default() -> Self {
+        Self {
+            alphabet: FLICKR_BASE,
+        }
+    }
 }
 
 impl BaseConverter {
-    // pub const BIN: &'static str = "01";
-    // pub const OCT: &'static str = "01234567";
-    // pub const DEC: &'static str = "0123456789";
     pub const HEX: &'static str = "0123456789abcdef";
-    //
-    pub fn new(alphabet: &'static str) -> Result<Self, Error> {
-        if alphabet.is_empty() {
-            return Err(Error(ErrorKind::EmptyAlphabet));
-        }
 
-        Ok(Self { alphabet })
+    /// Create a new BaseConverter with custom alphabet
+    pub fn new_custom(alphabet: &'static str) -> Result<Self, CustomAlphabetError> {
+        let converter = Self { alphabet };
+        converter.validate()?;
+
+        Ok(converter)
     }
 
-    // pub fn is_valid(&self, string: &str) -> bool {
-    //     string.chars().all(|c| self.alphabet.contains(c))
-    // }
+    /// Validate custom alphabet
+    pub fn validate(&self) -> Result<(), CustomAlphabetError> {
+        let trimmed = self.alphabet.trim();
 
+        if trimmed.is_empty() {
+            return Err(CustomAlphabetError::EmptyAlphabet);
+        }
+
+        if trimmed.len() == 1 {
+            return Err(CustomAlphabetError::Length);
+        }
+
+        let has_duplicates = trimmed
+            .chars()
+            .any(|c| trimmed.chars().filter(|&x| x == c).count() > 1);
+
+        if has_duplicates {
+            return Err(CustomAlphabetError::DuplicateAlphabetCharacter);
+        }
+
+        Ok(())
+    }
+
+    // Convert uuid to custom bytes
     pub fn convert(&self, uuid_string: &str) -> Vec<u8> {
         // decode hex uuid into bytes
         let decoded_bytes = decode_hex(&uuid_string).unwrap();
