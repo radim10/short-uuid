@@ -43,10 +43,22 @@ impl fmt::Display for CustomAlphabetError {
     }
 }
 
-// impl Deref for Error {
-//     type Target = ErrorKind;
-//
-//     fn deref(&self) -> &Self::Target {
-//         &self.0
-//     }
-// }
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+pub struct InvalidShortUuid;
+
+impl fmt::Display for InvalidShortUuid {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Invalid short uuid")
+    }
+}
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+pub struct ParseStrCustomError(pub ParseStrCustomErrorKind);
+
+#[derive(Clone, Debug, Eq, Hash, PartialEq)]
+pub enum ParseStrCustomErrorKind {
+    /// Custom alphabet error
+    CustomAlphabet(CustomAlphabetError),
+
+    InvalidShortUuid,
+}
