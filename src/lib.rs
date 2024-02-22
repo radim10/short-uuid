@@ -24,7 +24,20 @@ pub struct ShortUuid(Bytes);
 impl ShortUuid {
     /// Generate a short UUID v4 in flickrBase58
     pub fn generate() -> ShortUuid {
-        generate_short()
+        let default_converter = BaseConverter::default();
+        generate_short(default_converter)
+    }
+
+    /// Generate a short UUID v4 in custom alphabet
+    pub fn generate_custom(
+        custom_alphabet: &'static str,
+    ) -> Result<ShortUuid, CustomAlphabetError> {
+        let converter = BaseConverter::new_custom(custom_alphabet)?;
+
+        // Generate a short UUID v4 in custom alphabet
+        let generated = generate_short(converter);
+
+        Ok(generated)
     }
 
     /// Convert uuid to short format using flickrBase58
@@ -110,17 +123,15 @@ impl ShortUuid {
     }
 }
 
-fn generate_short() -> ShortUuid {
+fn generate_short(base_converter: BaseConverter) -> ShortUuid {
     // Generate UUID v4
     let uuid_string = uuid::Uuid::new_v4().to_string();
 
     // clean string
     let cleaned = uuid_string.to_lowercase().replace("-", "");
 
-    let converter = BaseConverter::default();
-
     // convert to selected base
-    let result = converter.convert(&cleaned);
+    let result = base_converter.convert(&cleaned);
 
     ShortUuid(result)
 }
