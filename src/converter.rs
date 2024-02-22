@@ -1,3 +1,7 @@
+use core::fmt;
+
+use crate::error::{Error, ErrorKind};
+
 pub struct BaseConverter {
     /// Alphabet used for encoding or decoding
     alphabet: &'static str,
@@ -11,17 +15,17 @@ impl BaseConverter {
     // pub const DEC: &'static str = "0123456789";
     pub const HEX: &'static str = "0123456789abcdef";
     //
-    pub fn new(alphabet: &'static str) -> Self {
+    pub fn new(alphabet: &'static str) -> Result<Self, Error> {
         if alphabet.is_empty() {
-            panic!("Bad alphabet");
+            return Err(Error(ErrorKind::EmptyAlphabet));
         }
 
-        Self { alphabet }
+        Ok(Self { alphabet })
     }
 
-    pub fn is_valid(&self, number: &str) -> bool {
-        number.chars().all(|c| self.alphabet.contains(c))
-    }
+    // pub fn is_valid(&self, string: &str) -> bool {
+    //     string.chars().all(|c| self.alphabet.contains(c))
+    // }
 
     pub fn convert(&self, uuid_string: &str) -> Vec<u8> {
         // decode hex uuid into bytes
@@ -38,20 +42,6 @@ impl BaseConverter {
         );
 
         result_bytes
-
-        // let result_string = bytes_to_custom_string(&decoded_bytes, self.dst_alphabet.as_bytes());
-        //
-        // let alphabet_length = get_short_id_length(self.dst_alphabet.len() as f64);
-        //
-        // let padded = pad_start(
-        //     &result_string,
-        //     alphabet_length as usize,
-        //     self.dst_alphabet.chars().next().unwrap(),
-        // );
-        //
-        // result_string
-
-        // return String::from_utf8(result_bytes).unwrap();
     }
 
     pub fn convert_to_hex(&self, target_bytes: &[u8]) -> Result<String, &'static str> {
@@ -68,25 +58,84 @@ impl BaseConverter {
     }
 }
 
-fn decode_hex(hex_string: &str) -> Result<Vec<u8>, &'static str> {
+#[derive(Debug)]
+pub enum DecodeHexError {
+    InvalidLength,
+
+    /// Undex:Index of invalid character (without dashes)
+    /// Invalid character value
+    InvalidCharacter {
+        index: usize,
+        character: char,
+    },
+}
+
+impl fmt::Display for DecodeHexError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DecodeHexError::InvalidLength => write!(f, "Invalid hexadecimal string length"),
+            DecodeHexError::InvalidCharacter {
+                character: char,
+                index,
+            } => {
+                write!(f, "Invalid character '{}' at index {}", char, index)
+            }
+        }
+    }
+}
+
+fn is_valid_hex_char(c: char) -> bool {
+    c.is_digit(16)
+}
+
+fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
     let hex_chars: Vec<char> = hex_string.chars().collect();
     let mut result = Vec::new();
 
     if hex_chars.len() % 2 != 0 {
-        return Err("Invalid hexadecimal string length");
+        return Err(DecodeHexError::InvalidLength);
     }
 
-    for i in (0..hex_chars.len()).step_by(2) {
-        let first_digit = hex_chars[i].to_digit(16);
+    let mut i = 0;
+    while i < hex_chars.len() {
+        let current_char = hex_chars[i];
+        if !is_valid_hex_char(current_char) {
+            return Err(DecodeHexError::InvalidCharacter {
+                index: i,
+                character: current_char,
+            });
+        }
+
+        let first_digit = current_char.to_digit(16);
         let second_digit = hex_chars[i + 1].to_digit(16);
 
         match (first_digit, second_digit) {
             (Some(first), Some(second)) => {
                 result.push((first << 4 | second) as u8);
             }
-            _ => return Err("Invalid hexadecimal character"),
+            _ => {
+                return Err(DecodeHexError::InvalidCharacter {
+                    index: i,
+                    character: hex_chars[i + 1],
+                });
+            }
         }
+
+        i += 2;
     }
+    // for i in (0..hex_chars.len()).step_by(1) {
+    //     let first_digit = hex_chars[i].to_digit(16);
+    //     let second_digit = hex_chars[i + 1].to_digit(16);
+    //
+    //     match (first_digit, second_digit) {
+    //         (Some(first), Some(second)) => {
+    //             result.push((first << 4 | second) as u8);
+    //         }
+    //         _ => {
+    //             return Err(DecodeHexError::InvalidCharacter(hex_chars[i]));
+    //         }
+    //     }
+    // }
 
     Ok(result)
 }
