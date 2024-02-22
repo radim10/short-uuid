@@ -51,6 +51,20 @@ impl ShortUuid {
     }
 
     /// Convert uuid to short format using flickrBase58
+    pub fn from_uuid(uuid: &uuid::Uuid) -> ShortUuid {
+        let uuid_string = uuid.to_string();
+
+        let cleaned = uuid_string.to_lowercase().replace("-", "");
+
+        let converter = BaseConverter::new(FLICKR_BASE).unwrap();
+
+        // convert to selected base
+        let result = converter.convert(&cleaned);
+
+        ShortUuid(result)
+    }
+
+    /// Convert uuid to short format using flickrBase58
     pub fn from_uuid_custom(
         uuid_string: &str,
         custom_base: &'static str,
