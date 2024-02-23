@@ -51,14 +51,3 @@ impl fmt::Display for InvalidShortUuid {
         write!(f, "Invalid short uuid")
     }
 }
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub struct ParseStrCustomError(pub ParseStrCustomErrorKind);
-
-#[derive(Clone, Debug, Eq, Hash, PartialEq)]
-pub enum ParseStrCustomErrorKind {
-    /// Custom alphabet error
-    CustomAlphabet(CustomAlphabetError),
-
-    InvalidShortUuid,
-}
