@@ -28,7 +28,7 @@
 //! ```
 //! ### Examples
 //!
-//! Generate short UUIDv4 encoded in flickrBase58 format:
+//! Generate short uuidv4 encoded in flickrBase58 format:
 //
 //! ```rust
 //! use short_uuid::ShortUuid;
@@ -36,14 +36,14 @@
 //! let shortened_uuid = ShortUuid::generate();
 //! ```
 //!
-//! Generate short UUIDv4 encoded in flickrBase58 format using macro:
+//! Generate short uuidv4 encoded in flickrBase58 format using macro:
 //! ```rust
 //! use short_uuid::short;
 //!
 //! let shortened_uuid = short!();
 //! ```
 //!
-//! Generate short UUIDv4 using custom alphabet:
+//! Generate short uuidv4 using custom alphabet:
 //!
 //! ```rust
 //! use short_uuid::{ShortUuidCustom, CustomTranslator};
@@ -55,7 +55,7 @@
 //! let custom_short_string = custom_short.to_string();
 //! ```
 //!
-//! Get Shortened UUID from uuid:
+//! Get shortened uuid from standard uuid:
 //!
 //! ```rust
 //! use short_uuid::ShortUuid;
@@ -64,7 +64,7 @@
 //!
 //! let short = ShortUuid::from_uuid(&uuid);
 //! ```
-//! Get Shortened UUID from uuid using custom alphabet:
+//! Get shortened uuid from uuid using custom alphabet:
 //!
 //! ```rust
 //! use short_uuid::{ShortUuidCustom, CustomTranslator};
@@ -77,7 +77,7 @@
 //! let short_custom_string = short_custom.to_string();
 //! ```
 //!
-//! Get Shortened UUID from uuid string:
+//! Get shortened uuid from uuid string:
 //!
 //! ```rust
 //! use short_uuid::ShortUuid;
@@ -86,7 +86,7 @@
 //! let short_uuid = ShortUuid::from_uuid_str(&uuid_str);
 //! ```
 //!
-//! Get Shortened UUID from uuid string using custom alphabet:
+//! Get shortened uuid from uuid string using custom alphabet:
 //!
 //! ```rust
 //! use short_uuid::{ShortUuidCustom, CustomTranslator};
@@ -102,7 +102,6 @@
 //! # References
 //! * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 //! * [uuid crate](https://crates.io/crates/uuid)
-
 
 use converter::BaseConverter;
 use error::{CustomAlphabetError, ErrorKind, InvalidShortUuid};
