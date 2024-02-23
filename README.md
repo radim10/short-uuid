@@ -1,6 +1,8 @@
- Generate and translate standard UUIDs into shorter or just different formats and back.
+# short-uuid\
 
- A port of the JavaScript npm package [short-uuid](https://www.npmjs.com/package/short-uuid) so big thanks to the author.
+Generate and translate standard UUIDs into shorter or just different formats and back.
+
+A port of the JavaScript npm package [short-uuid](https://www.npmjs.com/package/short-uuid) so big thanks to the author.
 
 An example of short uuid string in default flickrBase58 alphabet:
 ```
@@ -21,6 +23,7 @@ or add it to your `Cargo.toml`:
 [dependencies]
 short-uuid = "0.1.0"
 ```
+
 ### Examples
 
 Generate short UUIDv4 encoded in flickrBase58 format:
@@ -59,6 +62,7 @@ let uuid = uuid::Uuid::new_v4();
 
 let short = ShortUuid::from_uuid(&uuid);
 ```
+
 Get Shortened UUID from uuid using custom alphabet:
 
 ```rust
@@ -92,9 +96,9 @@ let translator = CustomTranslator::new(custom_alphabet).unwrap();
 let uuid_str = "3cfb46e7-c391-42ef-90b8-0c1d9508e752";
 let short_custom = ShortUuidCustom::from_uuid_str(&uuid_str, &translator).unwrap();
 let short_custom_string = short_custom.to_string();
- ```
+```
 
 # References
 
-* [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
-* [uuid crate](https://crates.io/crates/uuid)
+- [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+- [uuid crate](https://crates.io/crates/uuid)
