@@ -96,7 +96,7 @@ impl ShortUuid {
         format_uuid(result)
     }
 
-    /// Validate that short uuid str is valid uuid
+    /// Convert short to uuid string to ShortUuid
     pub fn parse_str(short_uuid_str: &str) -> Result<Self, InvalidShortUuid> {
         if short_uuid_str.len() != 22 {
             return Err(InvalidShortUuid);
