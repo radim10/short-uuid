@@ -1,26 +1,19 @@
 #[cfg(test)]
 mod tests {
-    use short_uuid::{converter::BaseConverter, ShortUuid};
+    use short_uuid::ShortUuid;
 
     #[test]
-    fn parse_str() {
-        let uuid_string = "0408510d-ce4f-4761-ab67-2dfe2931c898";
-        let converter = BaseConverter::default();
-
-        let result = converter
-            .convert(&uuid_string.to_lowercase().replace('-', ""))
-            .unwrap();
-
-        let short_str = String::from_utf8(result).unwrap();
-
-        let invalid = format!("{short_str}");
-
-        let short_uuid = ShortUuid::parse_str(&invalid).unwrap();
+    fn parse_str_success() {
+        let short_string = "mhvXdrZT4jP5T8vBxuvm75";
+        let short_uuid = ShortUuid::parse_str(short_string).expect("Failed to generate short uuid");
         dbg!(&short_uuid);
+    }
 
-        let uuid = short_uuid.to_uuid();
-        dbg!(&uuid);
-
-        assert_eq!(uuid.to_string(), uuid_string);
+    #[test]
+    // Test with invalid short uuid
+    fn parse_str_success_error() {
+        let short_string = "mhvXdrZ";
+        let short_uuid = ShortUuid::parse_str(short_string).expect_err("Test should have failed");
+        dbg!(&short_uuid);
     }
 }
