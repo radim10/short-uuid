@@ -16,11 +16,14 @@ pub const COOKIE_BASE_90: &str =
 type UuidError = uuid::Error;
 
 // pub type Bytes = [u8; 16];
+/// A byte array containing the ShortUuid
 pub type Bytes = Vec<u8>;
 
+/// Shortened UUID
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ShortUuid(Bytes);
 
+/// Shortened UUID using custom alphabet
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ShortUuidCustom(Bytes);
 
