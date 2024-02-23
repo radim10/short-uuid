@@ -18,10 +18,10 @@ type UuidError = uuid::Error;
 // pub type Bytes = [u8; 16];
 pub type Bytes = Vec<u8>;
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ShortUuid(Bytes);
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ShortUuidCustom(Bytes);
 
 /// Custom alphabet used for short uuid
