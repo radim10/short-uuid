@@ -104,10 +104,10 @@ impl fmt::Display for DecodeHexError {
     }
 }
 
-fn is_valid_hex_char(c: char) -> bool {
-    c.is_digit(16)
-}
-
+// fn is_valid_hex_char(c: char) -> bool {
+//     c.is_digit(16)
+// }
+//
 fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
     let hex_chars: Vec<char> = hex_string.chars().collect();
     let mut result = Vec::new();
