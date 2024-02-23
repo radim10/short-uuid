@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Radim Höfer"]
 categories = ["data-structures"]
-description = "A library to generate and parse short UUIDs, a port from Javscript's [short-uuid](https://github.com/oculus42/short-uuid)."
+description = "A library to generate and parse short UUIDs, a port from npm package [short-uuid](https://github.com/oculus42/short-uuid)."
 documentation = "https://docs.rs/short-uuid"
 
 keywords = ["uuid", "short-uuid"]
