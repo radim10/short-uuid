@@ -134,6 +134,18 @@ impl ShortUuidCustom {
         short_custom
     }
 
+    /// Convert uuid to short format using custom alphabet
+    pub fn from_uuid(uuid: &uuid::Uuid, translator: &CustomTranslator) -> Self {
+        let uuid_string = uuid.to_string();
+
+        let cleaned = uuid_string.to_lowercase().replace("-", "");
+
+        // convert to selected base
+        let result = translator.as_slice().convert(&cleaned).unwrap();
+
+        Self(result)
+    }
+
     /// Convert uuid string to short format using custom alphabet
     pub fn from_uuid_str(
         uuid_string: &str,
@@ -154,7 +166,10 @@ impl ShortUuidCustom {
     pub fn to_uuid(self, translator: &CustomTranslator) -> Result<uuid::Uuid, CustomAlphabetError> {
         // Convert to hex string
         // Should not fail
-        let result = translator.as_slice().convert_to_hex(&self.0).unwrap();
+        let result = translator
+            .as_slice()
+            .convert_to_hex(&self.as_slice())
+            .unwrap();
 
         // Format hex string as uuid
         let uuid_value = format_uuid(result);
@@ -212,4 +227,16 @@ fn format_uuid(value: String) -> uuid::Uuid {
     let uuid = uuid::Uuid::parse_str(&formatted_uuid).unwrap();
 
     return uuid;
+}
+
+impl From<uuid::Uuid> for ShortUuid {
+    fn from(uuid: uuid::Uuid) -> ShortUuid {
+        ShortUuid::from_uuid(&uuid)
+    }
+}
+
+impl From<ShortUuid> for uuid::Uuid {
+    fn from(short_uuid: ShortUuid) -> uuid::Uuid {
+        short_uuid.to_uuid()
+    }
 }
