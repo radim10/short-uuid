@@ -87,23 +87,17 @@ impl BaseConverter {
 pub enum DecodeHexError {
     InvalidLength,
 
-    /// Undex:Index of invalid character (without dashes)
     /// Invalid character value
-    InvalidCharacter {
-        index: usize,
-        character: char,
-    },
+    // Handled by checking uuid string before calling this
+    InvalidCharacter,
 }
 
 impl fmt::Display for DecodeHexError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             DecodeHexError::InvalidLength => write!(f, "Invalid hexadecimal string length"),
-            DecodeHexError::InvalidCharacter {
-                character: char,
-                index,
-            } => {
-                write!(f, "Invalid character '{}' at index {}", char, index)
+            DecodeHexError::InvalidCharacter => {
+                write!(f, "Invalid character in hexadecimal string")
             }
         }
     }
@@ -121,17 +115,8 @@ fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
         return Err(DecodeHexError::InvalidLength);
     }
 
-    let mut i = 0;
-    while i < hex_chars.len() {
-        let current_char = hex_chars[i];
-        if !is_valid_hex_char(current_char) {
-            return Err(DecodeHexError::InvalidCharacter {
-                index: i,
-                character: current_char,
-            });
-        }
-
-        let first_digit = current_char.to_digit(16);
+    for i in (0..hex_chars.len()).step_by(2) {
+        let first_digit = hex_chars[i].to_digit(16);
         let second_digit = hex_chars[i + 1].to_digit(16);
 
         match (first_digit, second_digit) {
@@ -139,17 +124,22 @@ fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
                 result.push((first << 4 | second) as u8);
             }
             _ => {
-                return Err(DecodeHexError::InvalidCharacter {
-                    index: i,
-                    character: hex_chars[i + 1],
-                });
+                return Err(DecodeHexError::InvalidCharacter);
             }
         }
-
-        i += 2;
     }
-    // for i in (0..hex_chars.len()).step_by(1) {
-    //     let first_digit = hex_chars[i].to_digit(16);
+    //
+    // let mut i = 0;
+    // while i < hex_chars.len() {
+    //     let current_char = hex_chars[i];
+    //     if !is_valid_hex_char(current_char) {
+    //         return Err(DecodeHexError::InvalidCharacter {
+    //             index: i,
+    //             character: current_char,
+    //         });
+    //     }
+    //
+    //     let first_digit = current_char.to_digit(16);
     //     let second_digit = hex_chars[i + 1].to_digit(16);
     //
     //     match (first_digit, second_digit) {
@@ -157,9 +147,14 @@ fn decode_hex(hex_string: &str) -> Result<Vec<u8>, DecodeHexError> {
     //             result.push((first << 4 | second) as u8);
     //         }
     //         _ => {
-    //             return Err(DecodeHexError::InvalidCharacter(hex_chars[i]));
+    //             return Err(DecodeHexError::InvalidCharacter {
+    //                 index: i,
+    //                 character: hex_chars[i + 1],
+    //             });
     //         }
     //     }
+    //
+    //     i += 2;
     // }
 
     Ok(result)
