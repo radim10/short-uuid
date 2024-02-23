@@ -8,7 +8,7 @@
 //! A port of the JavaScript npm package [short-uuid](https://www.npmjs.com/package/short-uuid) so big thanks to the author.
 //!
 //! An example of short uuid string in default flickrBase58 alphabet:
-//!```
+//!```text
 //! mhvXdrZT4jP5T8vBxuvm75
 //!```
 //!
