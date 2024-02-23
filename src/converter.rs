@@ -1,7 +1,9 @@
+///! Convert between different bases
 use std::fmt;
 
 use crate::{error::CustomAlphabetError, FLICKR_BASE_58};
 
+/// Converts from and to different bases
 pub struct BaseConverter {
     /// Alphabet used for encoding or decoding
     alphabet: &'static str,
@@ -17,8 +19,7 @@ impl Default for BaseConverter {
 }
 
 impl BaseConverter {
-    pub const HEX: &'static str = "0123456789abcdef";
-
+    // pub const HEX: &'static str = "0123456789abcdef";
     /// Create a new BaseConverter with custom alphabet
     pub fn new_custom(alphabet: &'static str) -> Result<Self, CustomAlphabetError> {
         let converter = Self { alphabet };
@@ -84,10 +85,10 @@ impl BaseConverter {
 }
 
 #[derive(Debug)]
+/// Error when decoding hex string
 pub enum DecodeHexError {
     InvalidLength,
 
-    /// Invalid character value
     // Handled by checking uuid string before calling this
     InvalidCharacter,
 }
@@ -192,6 +193,7 @@ fn bytes_to_custom_bytes(
     result
 }
 
+/// Invalid custom base error
 #[derive(Debug, Clone)]
 pub struct InvalidCustomBase;
 
