@@ -69,7 +69,7 @@ impl BaseConverter {
     }
 
     /// Convert custom bytes to hex
-    pub fn convert_to_hex(&self, target_bytes: &[u8]) -> Result<String, &'static str> {
+    pub fn convert_to_hex(&self, target_bytes: &[u8]) -> Result<String, InvalidCustomBase> {
         // Convert custom-encoded bytes to regular bytes using custom_bytes_to_hex
         let regular_bytes = custom_bytes_to_bytes(target_bytes, self.alphabet.as_bytes())?;
 
@@ -197,7 +197,13 @@ fn bytes_to_custom_bytes(
     result
 }
 
-fn custom_bytes_to_bytes(encoded_bytes: &[u8], alphabet: &[u8]) -> Result<Vec<u8>, &'static str> {
+#[derive(Debug, Clone)]
+pub struct InvalidCustomBase;
+
+fn custom_bytes_to_bytes(
+    encoded_bytes: &[u8],
+    alphabet: &[u8],
+) -> Result<Vec<u8>, InvalidCustomBase> {
     let base = alphabet.len() as u128;
 
     let mut result = 0u128;
@@ -208,9 +214,9 @@ fn custom_bytes_to_bytes(encoded_bytes: &[u8], alphabet: &[u8]) -> Result<Vec<u8
         match index {
             Some(i) => {
                 // Check for overflow before multiplying
-                result = result.checked_mul(base).ok_or("Multiplication overflow")? + i as u128;
+                result = result.checked_mul(base).ok_or(InvalidCustomBase)? + i as u128;
             }
-            None => return Err("Invalid character in custom base"),
+            None => return Err(InvalidCustomBase),
         }
     }
 
