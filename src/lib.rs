@@ -1,5 +1,5 @@
 use converter::BaseConverter;
-use error::{CustomAlphabetError, ErrorKind, InvalidShortUuid, ParseStrCustomErrorKind};
+use error::{CustomAlphabetError, ErrorKind, InvalidShortUuid};
 
 pub mod converter;
 mod error;
