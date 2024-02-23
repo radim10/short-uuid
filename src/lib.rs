@@ -107,7 +107,9 @@ impl ShortUuid {
         let to_hex_converter = BaseConverter::default();
 
         // Convert to hex string
-        let result = to_hex_converter.convert_to_hex(&byte_vector).unwrap();
+        let result = to_hex_converter
+            .convert_to_hex(&byte_vector)
+            .map_err(|_| InvalidShortUuid)?;
 
         // validate
         uuid::Uuid::try_parse(&result).map_err(|_| InvalidShortUuid)?;
@@ -162,14 +164,16 @@ impl ShortUuidCustom {
     pub fn parse_str(
         short_uuid_str: &str,
         translator: &CustomTranslator,
-    ) -> Result<Self, ParseStrCustomErrorKind> {
+    ) -> Result<Self, InvalidShortUuid> {
         let byte_vector: Vec<u8> = short_uuid_str.as_bytes().to_vec();
 
-        let result_string = translator.as_slice().convert_to_hex(&byte_vector).unwrap();
+        let result_string = translator
+            .as_slice()
+            .convert_to_hex(&byte_vector)
+            .map_err(|_| InvalidShortUuid)?;
 
         // validate
-        uuid::Uuid::try_parse(&result_string)
-            .map_err(|_| ParseStrCustomErrorKind::InvalidShortUuid)?;
+        uuid::Uuid::try_parse(&result_string).map_err(|_| InvalidShortUuid)?;
 
         Ok(Self(byte_vector))
     }
