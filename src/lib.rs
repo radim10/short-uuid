@@ -24,12 +24,35 @@ pub struct ShortUuid(Bytes);
 #[derive(Debug)]
 pub struct ShortUuidCustom(Bytes);
 
-// TODO: separate ShortUuid and ShortUuidCustom
+/// Custom alphabet used for short uuid
+pub type CustomAlphabet = &'static str;
+
+/// Custom translator used use for base conversion
+pub struct CustomTranslator(BaseConverter);
+
+impl CustomTranslator {
+    /// Create new custom translator
+    pub fn new(custom_alphabet: CustomAlphabet) -> Result<Self, CustomAlphabetError> {
+        let converter = BaseConverter::new_custom(custom_alphabet)?;
+        Ok(Self(converter))
+    }
+
+    fn as_slice(&self) -> &BaseConverter {
+        &self.0
+    }
+}
+
+impl From<ShortUuid> for ShortUuidCustom {
+    fn from(short_uuid: ShortUuid) -> Self {
+        ShortUuidCustom(short_uuid.0)
+    }
+}
+
 impl ShortUuid {
     /// Generate a short UUID v5 in flickrBase58
     pub fn generate() -> ShortUuid {
         let default_converter = BaseConverter::default();
-        generate_short(default_converter)
+        generate_short(&default_converter)
     }
 
     /// Convert uuid to short format using flickrBase58
@@ -99,42 +122,35 @@ impl ShortUuid {
 
 impl ShortUuidCustom {
     /// Generate a short UUID v4 in custom alphabet
-    pub fn generate(custom_alphabet: &'static str) -> Result<Self, CustomAlphabetError> {
-        let converter = BaseConverter::new_custom(custom_alphabet)?;
-
+    pub fn generate(translator: &CustomTranslator) -> Self {
         // Generate a short UUID v4 in custom alphabet
-        let generated = generate_short(converter);
+        let generated = generate_short(&translator.as_slice());
+        let short_custom: ShortUuidCustom = generated.into();
 
-        Ok(Self(generated.0))
+        short_custom
     }
 
     /// Convert uuid string to short format using custom alphabet
     pub fn from_uuid_str(
         uuid_string: &str,
-        custom_alphabet: &'static str,
+        translator: &CustomTranslator,
     ) -> Result<Self, ErrorKind> {
         // validate
         let parsed = uuid::Uuid::parse_str(uuid_string).map_err(|e| ErrorKind::UuidError(e))?;
 
-        // Validate custom alphabet
-        let converter =
-            BaseConverter::new_custom(custom_alphabet).map_err(|e| ErrorKind::CustomAlphabet(e))?;
-
         let cleaned = parsed.to_string().to_lowercase().replace("-", "");
 
         // convert to selected base
-        let result = converter.convert(&cleaned).unwrap();
+        let result = translator.as_slice().convert(&cleaned).unwrap();
 
         Ok(Self(result))
     }
 
     /// Convert short to uuid using custom base
-    pub fn to_uuid(self, custom_alphabet: &'static str) -> Result<uuid::Uuid, CustomAlphabetError> {
-        let to_hex_converter = BaseConverter::new_custom(custom_alphabet)?;
-
+    pub fn to_uuid(self, translator: &CustomTranslator) -> Result<uuid::Uuid, CustomAlphabetError> {
         // Convert to hex string
         // Should not fail
-        let result = to_hex_converter.convert_to_hex(&self.0).unwrap();
+        let result = translator.as_slice().convert_to_hex(&self.0).unwrap();
 
         // Format hex string as uuid
         let uuid_value = format_uuid(result);
@@ -145,14 +161,11 @@ impl ShortUuidCustom {
     /// Validate that short uuid str is valid uuid using custom alphabet
     pub fn parse_str(
         short_uuid_str: &str,
-        custom_alphabet: &'static str,
+        translator: &CustomTranslator,
     ) -> Result<Self, ParseStrCustomErrorKind> {
         let byte_vector: Vec<u8> = short_uuid_str.as_bytes().to_vec();
-        let converter = BaseConverter::new_custom(custom_alphabet)
-            .map_err(|e| ParseStrCustomErrorKind::CustomAlphabet(e))?;
 
-        //
-        let result_string = converter.convert_to_hex(&byte_vector).unwrap();
+        let result_string = translator.as_slice().convert_to_hex(&byte_vector).unwrap();
 
         // validate
         uuid::Uuid::try_parse(&result_string)
@@ -166,7 +179,7 @@ impl ShortUuidCustom {
     }
 }
 
-fn generate_short(base_converter: BaseConverter) -> ShortUuid {
+fn generate_short(base_converter: &BaseConverter) -> ShortUuid {
     // Generate UUID v4
     let uuid_string = uuid::Uuid::new_v4().to_string();
 
