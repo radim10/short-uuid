@@ -1,4 +1,4 @@
-/// Generate a short UUID v4 in flickrBase58 alphabet
+/// Generate a short UUID v4 using default flickrBase58 alphabet
 /// ## Usage
 /// ```rust
 /// use short_uuid::short;
