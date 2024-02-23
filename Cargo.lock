@@ -424,7 +424,10 @@ dependencies = [
 
 [[package]]
 name = "short-uuid-examples"
-version = "0.0.0"
+version = "0.1.0"
+dependencies = [
+ "short-uuid",
+]
 
 [[package]]
 name = "syn"

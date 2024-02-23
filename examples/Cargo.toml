@@ -1,11 +1,40 @@
 [package]
 name = "short-uuid-examples"
-version = "0.0.0"
+version = "0.1.0"
 publish = false
 edition = "2021"
+
+[dependencies.short-uuid]
+path = "../"
 
 [[example]]
 name = "generate"
 path = "src/generate.rs"
+
+[[example]]
+name = "custom_generate"
+path = "src/custom/generate.rs"
+
+
+[[example]]
+name = "generate_macro"
+path = "src/generate_macro.rs"
+
+
+[[example]]
+name = "from_uuid"
+path = "src/from_uuid.rs"
+
+[[example]]
+name = "custom_from_uuid"
+path = "src/custom/from_uuid.rs"
+
+[[example]]
+name = "to_uuid"
+path = "src/to_uuid.rs"
+
+[[example]]
+name = "to_uuid_custom"
+path = "src/custom/to_uuid.rs"
 
 
