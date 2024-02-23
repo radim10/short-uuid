@@ -1,6 +1,7 @@
 use std::fmt;
 use uuid;
 
+/// General error
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct Error(pub ErrorKind);
 
