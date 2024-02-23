@@ -98,7 +98,9 @@ impl ShortUuid {
 
     /// Convert short to uuid string to ShortUuid
     pub fn parse_str(short_uuid_str: &str) -> Result<Self, InvalidShortUuid> {
-        if short_uuid_str.len() != 22 {
+        let expected_len = 22;
+
+        if short_uuid_str.len() != expected_len {
             return Err(InvalidShortUuid);
         };
 
