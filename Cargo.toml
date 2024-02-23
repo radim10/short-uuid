@@ -13,7 +13,7 @@ keywords = ["uuid", "short-uuid"]
 license = "MIT"
 homepage = "https://github.com/radim10/short-uuid"
 readme = "README.md"
-repository = "https://github.com/uuid-rs/uuid"
+repository = "https://github.com/radim10/short-uuid"
 
 
 [features]
