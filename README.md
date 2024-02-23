@@ -1,4 +1,4 @@
-# short-uuid\
+# short-uuid
 
 Generate and translate standard UUIDs into shorter or just different formats and back.
 
