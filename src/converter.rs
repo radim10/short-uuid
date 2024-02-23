@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{error::CustomAlphabetError, FLICKR_BASE};
+use crate::{error::CustomAlphabetError, FLICKR_BASE_58};
 
 pub struct BaseConverter {
     /// Alphabet used for encoding or decoding
@@ -11,7 +11,7 @@ pub struct BaseConverter {
 impl Default for BaseConverter {
     fn default() -> Self {
         Self {
-            alphabet: FLICKR_BASE,
+            alphabet: FLICKR_BASE_58,
         }
     }
 }
