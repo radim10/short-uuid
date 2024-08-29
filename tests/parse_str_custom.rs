@@ -40,4 +40,15 @@ mod tests {
 
         dbg!(&from_short);
     }
+
+    #[test]
+    // Test with invalid short uuid
+    fn parse_str_success_error() {
+        let custom_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let short_string = "mhvXdrZ";
+        let translator = CustomTranslator::new(custom_alphabet).unwrap();
+        let short_uuid = ShortUuidCustom::parse_str(short_string, &translator)
+            .expect_err("Test should have failed");
+        dbg!(&short_uuid);
+    }
 }
