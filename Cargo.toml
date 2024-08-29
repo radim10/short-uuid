@@ -1,12 +1,12 @@
 [package]
 name = "short-uuid"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Radim Höfer"]
 categories = ["data-structures"]
 description = "A library to generate and parse short uuids"
 documentation = "https://docs.rs/short-uuid"
-metadata = "0.1.2"
+metadata = "0.1.3"
 
 keywords = ["uuid", "short-uuid"]
 
@@ -40,4 +40,3 @@ features = ["v4"]
 
 [dev-dependencies]
 criterion = "0.5.1"
-
