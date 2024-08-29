@@ -290,6 +290,12 @@ impl ShortUuidCustom {
         short_uuid_str: &str,
         translator: &CustomTranslator,
     ) -> Result<Self, InvalidShortUuid> {
+        let expected_len = 22;
+
+        if short_uuid_str.len() != expected_len {
+            return Err(InvalidShortUuid);
+        };
+
         let byte_vector: Vec<u8> = short_uuid_str.as_bytes().to_vec();
 
         let result_string = translator
