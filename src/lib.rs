@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! short-uuid = "0.1.0"
+//! short-uuid = "0.1.4"
 //! ```
 //! ### Examples
 //!
