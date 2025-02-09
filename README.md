@@ -89,7 +89,7 @@ let short_uuid = ShortUuid::from_uuid_str(&uuid_str);
 
 Get shortened uuid from uuid string using custom alphabet:
 
-```rust
+````rust
 use short_uuid::{ShortUuidCustom, CustomTranslator};
 
 let custom_alphabet = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -98,6 +98,36 @@ let translator = CustomTranslator::new(custom_alphabet).unwrap();
 let uuid_str = "3cfb46e7-c391-42ef-90b8-0c1d9508e752";
 let short_custom = ShortUuidCustom::from_uuid_str(&uuid_str, &translator).unwrap();
 let short_custom_string = short_custom.to_string();
+
+Serialize and deserialize struct with short uuid:
+
+To use serialization/deserialization, enable the `serde` feature:
+
+```toml
+[dependencies]
+short-uuid = { version = "0.2.0", features = ["serde"] }
+````
+
+Example usage:
+
+```rust
+#[cfg(feature = "serde")]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
+struct TestStruct {
+    id: ShortUuid,
+}
+
+#[cfg(feature = "serde")]
+fn example() {
+    let uuid_str = "0408510d-ce4f-4761-ab67-2dfe2931c898";
+    let short_id = ShortUuid::from_uuid_str(uuid_str).unwrap();
+
+    let test_struct = TestStruct {
+        id: short_id,
+    };
+
+    let serialized = serde_json::to_string(&test_struct).unwrap();
+}
 ```
 
 # References
