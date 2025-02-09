@@ -127,10 +127,12 @@ pub type Bytes = Vec<u8>;
 
 /// Shortened UUID
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ShortUuid(Bytes);
 
 /// Shortened UUID using custom alphabet
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ShortUuidCustom(Bytes);
 
 /// Custom alphabet used for short uuid
