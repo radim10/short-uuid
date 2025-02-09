@@ -99,9 +99,8 @@
 //! let short_custom_string = short_custom.to_string();
 //! ```
 //!
-//! Serialize and deserialize struct with short uuid:
+//! Serialize and deserialize struct with short uuid (you must enable the `serde` feature):
 //!
-//! To use serialization/deserialization, enable the `serde` feature:
 //! ```toml
 //! [dependencies]
 //! short-uuid = { version = "0.2.0", features = ["serde"] }
