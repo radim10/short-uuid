@@ -24,7 +24,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! short-uuid = "0.1.4"
+//! short-uuid = "0.2.0"
 //! ```
 //! ### Examples
 //!
@@ -99,6 +99,34 @@
 //! let short_custom_string = short_custom.to_string();
 //! ```
 //!
+//! Serialize and deserialize struct with short uuid (you must enable the `serde` feature):
+//!
+//! ```toml
+//! [dependencies]
+//! short-uuid = { version = "0.2.0", features = ["serde"] }
+//! ```
+//!
+//! Example usage:
+//! ```rust
+//! #[cfg(feature = "serde")]
+//! #[derive(Serialize, Deserialize, PartialEq, Debug)]
+//! struct TestStruct {
+//!     id: ShortUuid,
+//! }
+//!
+//! #[cfg(feature = "serde")]
+//! fn example() {
+//!     let uuid_str = "0408510d-ce4f-4761-ab67-2dfe2931c898";
+//!     let short_id = ShortUuid::from_uuid_str(uuid_str).unwrap();
+//!
+//!     let test_struct = TestStruct {
+//!         id: short_id,
+//!     };
+//!
+//!     let serialized = serde_json::to_string(&test_struct).unwrap();
+//! }
+//! ```
+//!
 //! # References
 //! * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 //! * [uuid crate](https://crates.io/crates/uuid)
@@ -154,6 +182,56 @@ impl CustomTranslator {
 impl From<ShortUuid> for ShortUuidCustom {
     fn from(short_uuid: ShortUuid) -> Self {
         ShortUuidCustom(short_uuid.0)
+    }
+}
+
+// serialize into string
+#[cfg(feature = "serde")]
+impl serde::Serialize for ShortUuid {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let string = String::from_utf8(self.0.clone())
+            .map_err(|e| serde::ser::Error::custom(e.to_string()))?;
+        serializer.serialize_str(&string)
+    }
+}
+
+// deserialize from string
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for ShortUuid {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let string = String::deserialize(deserializer)?;
+        Ok(ShortUuid(string.into_bytes()))
+    }
+}
+
+// serialize into string
+#[cfg(feature = "serde")]
+impl serde::Serialize for ShortUuidCustom {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let string = String::from_utf8(self.0.clone())
+            .map_err(|e| serde::ser::Error::custom(e.to_string()))?;
+        serializer.serialize_str(&string)
+    }
+}
+
+// deserialize from string
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for ShortUuidCustom {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let string = String::deserialize(deserializer)?;
+        Ok(ShortUuidCustom(string.into_bytes()))
     }
 }
 
