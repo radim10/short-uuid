@@ -38,5 +38,10 @@ harness = false
 version = "1.7.0"
 features = ["v4"]
 
+[dependencies.serde]
+version = "1.0.217"
+features = ["derive"]
+optional = true
+
 [dev-dependencies]
 criterion = "0.5.1"
