@@ -184,6 +184,8 @@ impl From<ShortUuid> for ShortUuidCustom {
         ShortUuidCustom(short_uuid.0)
     }
 }
+
+// serialize into string
 #[cfg(feature = "serde")]
 impl serde::Serialize for ShortUuid {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -196,6 +198,7 @@ impl serde::Serialize for ShortUuid {
     }
 }
 
+// deserialize from string
 #[cfg(feature = "serde")]
 impl<'de> serde::Deserialize<'de> for ShortUuid {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
@@ -207,6 +210,7 @@ impl<'de> serde::Deserialize<'de> for ShortUuid {
     }
 }
 
+// serialize into string
 #[cfg(feature = "serde")]
 impl serde::Serialize for ShortUuidCustom {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -219,6 +223,7 @@ impl serde::Serialize for ShortUuidCustom {
     }
 }
 
+// deserialize from string
 #[cfg(feature = "serde")]
 impl<'de> serde::Deserialize<'de> for ShortUuidCustom {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
