@@ -99,6 +99,35 @@
 //! let short_custom_string = short_custom.to_string();
 //! ```
 //!
+//! # Serde Example
+//!
+//! To use serialization/deserialization, enable the `serde` feature:
+//! ```toml
+//! [dependencies]
+//! short-uuid = { version = "0.2.0", features = ["serde"] }
+//! ```
+//!
+//! Example usage:
+//! ```rust
+//! #[cfg(feature = "serde")]
+//! #[derive(Serialize, Deserialize, PartialEq, Debug)]
+//! struct TestStruct {
+//!     id: ShortUuid,
+//! }
+//!
+//! #[cfg(feature = "serde")]
+//! fn example() {
+//!     let uuid_str = "0408510d-ce4f-4761-ab67-2dfe2931c898";
+//!     let short_id = ShortUuid::from_uuid_str(uuid_str).unwrap();
+//!
+//!     let test_struct = TestStruct {
+//!         id: short_id,
+//!     };
+//!
+//!     let serialized = serde_json::to_string(&test_struct).unwrap();
+//! }
+//! ```
+//!
 //! # References
 //! * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 //! * [uuid crate](https://crates.io/crates/uuid)
