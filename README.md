@@ -89,7 +89,7 @@ let short_uuid = ShortUuid::from_uuid_str(&uuid_str);
 
 Get shortened uuid from uuid string using custom alphabet:
 
-````rust
+```rust
 use short_uuid::{ShortUuidCustom, CustomTranslator};
 
 let custom_alphabet = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -98,15 +98,14 @@ let translator = CustomTranslator::new(custom_alphabet).unwrap();
 let uuid_str = "3cfb46e7-c391-42ef-90b8-0c1d9508e752";
 let short_custom = ShortUuidCustom::from_uuid_str(&uuid_str, &translator).unwrap();
 let short_custom_string = short_custom.to_string();
+```
 
-Serialize and deserialize struct with short uuid:
-
-To use serialization/deserialization, enable the `serde` feature:
+Serialize and deserialize struct with short uuid (you must enable the `serde` feature):
 
 ```toml
 [dependencies]
 short-uuid = { version = "0.2.0", features = ["serde"] }
-````
+```
 
 Example usage:
 
@@ -134,3 +133,7 @@ fn example() {
 
 - [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 - [uuid crate](https://crates.io/crates/uuid)
+
+```
+
+```
