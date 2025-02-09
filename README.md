@@ -133,7 +133,3 @@ fn example() {
 
 - [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
 - [uuid crate](https://crates.io/crates/uuid)
-
-```
-
-```
