@@ -13,29 +13,46 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn test_serialize_deserialize() {
-        let orig_uuid_str = "0408510d-ce4f-4761-ab67-2dfe2931c898";
-        let uuid = ShortUuid::from_uuid_str(&orig_uuid_str).unwrap();
+        let uuid_str = "0408510d-ce4f-4761-ab67-2dfe2931c898";
+        let short = ShortUuid::from_uuid_str(uuid_str).unwrap();
 
         let custom_alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123465";
 
         let translator =
             CustomTranslator::new(custom_alphabet).expect("Failed to create translator");
 
-        let custom_uuid = ShortUuidCustom::from_uuid_str(&orig_uuid_str, &translator).unwrap();
+        let custom_short = ShortUuidCustom::from_uuid_str(uuid_str, &translator).unwrap();
 
         let test_struct = TestStruct {
-            id: uuid.clone(),
-            custom_id: custom_uuid.clone(),
+            id: short.clone(),
+            custom_id: custom_short.clone(),
         };
 
         // Test serialization
         let serialized = serde_json::to_string(&test_struct).unwrap();
 
+        // Verify the serialized output is a string
+        let json_value: serde_json::Value = serde_json::from_str(&serialized).unwrap();
+        assert!(json_value["id"].is_string());
+        assert!(json_value["custom_id"].is_string());
+
         // Test deserialization
         let deserialized: TestStruct = serde_json::from_str(&serialized).unwrap();
 
+        // Verify round-trip equality
         assert_eq!(test_struct, deserialized);
-        assert_eq!(uuid, deserialized.id);
-        assert_eq!(custom_uuid, deserialized.custom_id);
+        assert_eq!(short, deserialized.id);
+        assert_eq!(custom_short, deserialized.custom_id);
+
+        // Test direct string serialization
+        let short_serialized = serde_json::to_string(&short).unwrap();
+        assert_eq!(short_serialized, format!("\"{}\"", short.to_string()));
+
+        let custom_short_serialized = serde_json::to_string(&custom_short).unwrap();
+        panic!("{}", custom_short_serialized);
+        assert_eq!(
+            custom_short_serialized,
+            format!("\"{}\"", custom_short.to_string())
+        );
     }
 }
