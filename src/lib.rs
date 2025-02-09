@@ -99,7 +99,7 @@
 //! let short_custom_string = short_custom.to_string();
 //! ```
 //!
-//! # Serde Example
+//! Serialize and deserialize struct with short uuid:
 //!
 //! To use serialization/deserialization, enable the `serde` feature:
 //! ```toml
