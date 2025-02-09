@@ -127,12 +127,10 @@ pub type Bytes = Vec<u8>;
 
 /// Shortened UUID
 #[derive(Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ShortUuid(Bytes);
 
 /// Shortened UUID using custom alphabet
 #[derive(Clone, Debug, Eq, PartialEq)]
-#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ShortUuidCustom(Bytes);
 
 /// Custom alphabet used for short uuid
@@ -156,6 +154,51 @@ impl CustomTranslator {
 impl From<ShortUuid> for ShortUuidCustom {
     fn from(short_uuid: ShortUuid) -> Self {
         ShortUuidCustom(short_uuid.0)
+    }
+}
+#[cfg(feature = "serde")]
+impl serde::Serialize for ShortUuid {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let string = String::from_utf8(self.0.clone())
+            .map_err(|e| serde::ser::Error::custom(e.to_string()))?;
+        serializer.serialize_str(&string)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for ShortUuid {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let string = String::deserialize(deserializer)?;
+        Ok(ShortUuid(string.into_bytes()))
+    }
+}
+
+#[cfg(feature = "serde")]
+impl serde::Serialize for ShortUuidCustom {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let string = String::from_utf8(self.0.clone())
+            .map_err(|e| serde::ser::Error::custom(e.to_string()))?;
+        serializer.serialize_str(&string)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for ShortUuidCustom {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let string = String::deserialize(deserializer)?;
+        Ok(ShortUuidCustom(string.into_bytes()))
     }
 }
 
