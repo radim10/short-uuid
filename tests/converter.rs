@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use short_uuid::converter::BaseConverter;
+    use short_uuid::ShortUuid;
 
     #[test]
     fn test_flickr_base_conversion() {
@@ -12,8 +13,10 @@ mod tests {
             .unwrap();
 
         let result_string = String::from_utf8(result).unwrap();
-        dbg!(&result_string);
-
         assert_eq!(result_string.len(), 22);
+        assert_eq!(result_string, "1uT6L1R6xPSdPC4Nr1kvnJ");
+
+        let uuid = ShortUuid::parse_str(&result_string).unwrap().to_uuid();
+        assert_eq!(uuid.to_string() , uuid_string);
     }
 }
